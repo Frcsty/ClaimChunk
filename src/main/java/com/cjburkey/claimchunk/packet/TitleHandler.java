@@ -1,10 +1,12 @@
 package com.cjburkey.claimchunk.packet;
 
 import com.cjburkey.claimchunk.Utils;
-import java.lang.reflect.Constructor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
+
+import java.lang.reflect.Constructor;
 
 /**
  * Class to handle title packets using reflection. Hopefully version
@@ -12,7 +14,8 @@ import org.bukkit.entity.Player;
  *
  * @author bramhaag
  */
-public final class TitleHandler {
+public final class TitleHandler
+{
 
     private static final String jsonFormat = "{\"text\":\"%s\",\"color\":\"%s\"}";
 
@@ -27,8 +30,12 @@ public final class TitleHandler {
      * @throws Exception Reflection error.
      */
     public static void showTitle(Player player, String text, int fadeInTicks, int stayTicks,
-                                 int fadeOutTicks) throws Exception {
-        showTitle(player, text, fadeInTicks, stayTicks, fadeOutTicks, "TITLE");
+                                 int fadeOutTicks) throws Exception
+    {
+        if (player != null)
+        {
+            showTitle(player, text, fadeInTicks, stayTicks, fadeOutTicks, "TITLE");
+        }
     }
 
     /**
@@ -42,7 +49,8 @@ public final class TitleHandler {
      * @throws Exception Reflection error.
      */
     public static void showSubTitle(Player player, String text, int fadeInTicks, int stayTicks,
-                                    int fadeOutTicks) throws Exception {
+                                    int fadeOutTicks) throws Exception
+    {
         showTitle(player, text, fadeInTicks, stayTicks, fadeOutTicks, "SUBTITLE");
     }
 
@@ -57,15 +65,20 @@ public final class TitleHandler {
      * @throws Exception Reflection error.
      */
     public static void showActionbarTitle(Player player, String text, int fadeInTicks, int stayTicks,
-                                          int fadeOutTicks) throws Exception {
+                                          int fadeOutTicks) throws Exception
+    {
         // This may fail if the server is running a version that doesn't support action bars
         // In such a case, unless the action was to clear the action bar, the message will be displyed in the subtitle slot
         //  and a message logged in the console.
         // This may not be necessary but I'm doing it anyway so deal with it
-        try {
+        try
+        {
             showTitle(player, text, fadeInTicks, stayTicks, fadeOutTicks, "ACTIONBAR");
-        } catch (Exception ignored) {
-            if (!text.trim().isEmpty()) {
+        }
+        catch (Exception ignored)
+        {
+            if (!text.trim().isEmpty())
+            {
                 showSubTitle(player, text, fadeInTicks, stayTicks, fadeOutTicks);
                 Utils.err("Error: This server is running a version that does not support actionbars. Please display the 'useActionBar' config option under the 'titles' section in the config file.");
             }
@@ -74,17 +87,22 @@ public final class TitleHandler {
 
     // Some pretty volatile code here, but if it works? idc.
     private static void showTitle(Player player, String text, int fadeInTicks, int stayTicks,
-                                  int fadeOutTicks, String show) throws Exception {
+                                  int fadeOutTicks, String show) throws Exception
+    {
         Constructor<?> titleConstructor = PacketHandler.getNMSClass("PacketPlayOutTitle").getConstructor(
                 PacketHandler.getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0],
                 PacketHandler.getNMSClass("IChatBaseComponent"), int.class, int.class, int.class);
         Object packet = titleConstructor.newInstance(
                 PacketHandler.getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField(show).get(null),
                 getTextComponent(text), fadeInTicks, stayTicks, fadeOutTicks);
+
+        if (player instanceof Server) return;
+
         PacketHandler.sendPacket(player, packet);
     }
 
-    private static Object getTextComponent(String rawText) throws Exception {
+    private static Object getTextComponent(String rawText) throws Exception
+    {
         TextComponent component = new TextComponent(TextComponent.fromLegacyText(Utils.color(rawText)));
         return PacketHandler.getNMSClass("IChatBaseComponent").getDeclaredClasses()[0]
                 .getMethod("a", String.class).invoke(null, ComponentSerializer.toString(component));
