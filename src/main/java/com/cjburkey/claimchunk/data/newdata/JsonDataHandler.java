@@ -1,5 +1,6 @@
 package com.cjburkey.claimchunk.data.newdata;
 
+import com.cjburkey.claimchunk.ClaimChunk;
 import com.cjburkey.claimchunk.Config;
 import com.cjburkey.claimchunk.Utils;
 import com.cjburkey.claimchunk.chunk.ChunkPos;
@@ -8,6 +9,10 @@ import com.cjburkey.claimchunk.player.FullPlayerData;
 import com.cjburkey.claimchunk.player.SimplePlayerData;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.bukkit.Bukkit;
+import org.bukkit.generator.ChunkGenerator;
+
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -21,10 +26,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 
 public class JsonDataHandler implements IClaimChunkDataHandler {
 
@@ -91,7 +96,8 @@ public class JsonDataHandler implements IClaimChunkDataHandler {
 
     @Override
     public void addClaimedChunk(ChunkPos pos, UUID player) {
-        claimedChunks.put(pos, new DataChunk(pos, player, false));
+        final String commands = ClaimChunk.getInstance().getChunkHandler().getBlockedCommands(Bukkit.getPlayer(player).getLocation().getChunk());
+        claimedChunks.put(pos, new DataChunk(pos, player, false, commands));
     }
 
     @Override
@@ -123,15 +129,46 @@ public class JsonDataHandler implements IClaimChunkDataHandler {
         return this.claimedChunks
                 .entrySet()
                 .stream()
-                .map(claimedChunk -> new DataChunk(claimedChunk.getKey(), claimedChunk.getValue().player, claimedChunk.getValue().tnt))
+                .map(claimedChunk -> new DataChunk(claimedChunk.getKey(), claimedChunk.getValue().player, claimedChunk.getValue().tnt, claimedChunk.getValue().commands))
                 .toArray(DataChunk[]::new);
     }
 
     @Override
-    public boolean toggleTnt(ChunkPos pos) {
+    public boolean toggleTnt(ChunkPos pos)
+    {
         DataChunk chunk = claimedChunks.get(pos);
         if (chunk == null) return false;
         return (chunk.tnt = !chunk.tnt);
+    }
+
+    @Override
+    public void addBlockedCommands(final ChunkPos pos, final String commands)
+    {
+        DataChunk chunk = claimedChunks.get(pos);
+        chunk.commands = chunk.commands + commands;
+    }
+
+    @Override
+    public void removeBlockedCommands(final ChunkPos pos, final String commands)
+    {
+        DataChunk chunk = claimedChunks.get(pos);
+        final List<String> cmds = new ArrayList<>(Arrays.asList(commands.split(",")));
+
+        String newCommands = "";
+        for (String cmd : chunk.commands.split(",")) {
+            if (!cmds.contains(cmd)) {
+                newCommands = newCommands.concat(cmd + ",");
+            }
+        }
+        chunk.commands = newCommands;
+    }
+
+    @Override
+    public String getBlockedCommands(final ChunkPos pos)
+    {
+        DataChunk chunk = claimedChunks.get(pos);
+        if (chunk == null) return "";
+        return chunk.commands;
     }
 
     @Override

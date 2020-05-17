@@ -295,4 +295,22 @@ public final class ChunkHandler {
         return dataHandler.isTntEnabled(new ChunkPos(chunk));
     }
 
+    public void addBlockedCommands(Chunk chunk, String commands)
+    {
+        ChunkPos pos = new ChunkPos(chunk);
+        dataHandler.addBlockedCommands(pos, commands);
+    }
+
+    public void removeBlockedCommands(Chunk chunk, String commands)
+    {
+        ChunkPos pos = new ChunkPos(chunk);
+        dataHandler.removeBlockedCommands(pos, commands);
+    }
+
+    public String getBlockedCommands(Chunk chunk)
+    {
+        ChunkPos pos = new ChunkPos(chunk);
+        return dataHandler.getBlockedCommands(pos);
+    }
+
 }

@@ -22,6 +22,8 @@ public class DataChunk {
     @SuppressWarnings("UnusedAssignment")
     public boolean tnt = true;
 
+    public String commands;
+
     /**
      * Create an instance of chunk data that links a chunk's position and the
      * owning player.
@@ -30,10 +32,11 @@ public class DataChunk {
      * @param player The UUID of the owning player.
      * @param tnt    Whether TNT is enabled in this chunk.
      */
-    public DataChunk(ChunkPos chunk, UUID player, boolean tnt) {
+    public DataChunk(ChunkPos chunk, UUID player, boolean tnt, String commands) {
         this.chunk = chunk;
         this.player = player;
         this.tnt = tnt;
+        this.commands = commands;
     }
 
     @Override

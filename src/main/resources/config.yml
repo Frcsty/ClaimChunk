@@ -17,6 +17,14 @@ colors:
   infoColor: GOLD
   errorColor: RED
 
+disabledCommands:
+  header:
+    - '&6&l[!]&r &6Blocked Commands:'
+    - ''
+  concat: ' &8- &f'
+  footer:
+    - '&8&l> &8----- &8&l<'
+
 chunks:
   maxChunksClaimed: 50
   particlesWhenClaiming: true
@@ -29,6 +37,7 @@ chunks:
   defaultSendAlertsToOwner: true
   maxPerListPage: 5
   disabledWorlds: []
+  disabledBlockedCommands: ["home", "rtp", "spawn"]
 
 protection:
   blockUnclaimedChunks: false

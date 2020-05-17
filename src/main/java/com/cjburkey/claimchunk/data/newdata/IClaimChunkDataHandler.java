@@ -4,11 +4,12 @@ import com.cjburkey.claimchunk.chunk.ChunkPos;
 import com.cjburkey.claimchunk.chunk.DataChunk;
 import com.cjburkey.claimchunk.player.FullPlayerData;
 import com.cjburkey.claimchunk.player.SimplePlayerData;
+
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import javax.annotation.Nullable;
 
 /**
  * Represents a class that may act as a data handler for ClaimChunk.
@@ -17,7 +18,8 @@ import javax.annotation.Nullable;
  *
  * @since 0.0.13
  */
-public interface IClaimChunkDataHandler {
+public interface IClaimChunkDataHandler
+{
 
     // -- DATA -- //
 
@@ -140,6 +142,12 @@ public interface IClaimChunkDataHandler {
      */
     boolean isTntEnabled(ChunkPos pos);
 
+    void addBlockedCommands(ChunkPos pos, String commands);
+
+    void removeBlockedCommands(ChunkPos pos, String commands);
+
+    String getBlockedCommands(ChunkPos pos);
+
     // -- PLAYERS -- //
 
     /**
@@ -169,13 +177,14 @@ public interface IClaimChunkDataHandler {
      * @param playerData The player to add
      * @since 0.0.13
      */
-    default void addPlayer(FullPlayerData playerData) {
+    default void addPlayer(FullPlayerData playerData)
+    {
         this.addPlayer(playerData.player,
-                playerData.lastIgn,
-                playerData.permitted,
-                playerData.chunkName,
-                playerData.lastOnlineTime,
-                playerData.alert);
+                       playerData.lastIgn,
+                       playerData.permitted,
+                       playerData.chunkName,
+                       playerData.lastOnlineTime,
+                       playerData.alert);
     }
 
     /**
@@ -187,7 +196,8 @@ public interface IClaimChunkDataHandler {
      *                their chunks
      * @since 0.0.13
      */
-    default void addPlayer(UUID player, String lastIgn, boolean alerts) {
+    default void addPlayer(UUID player, String lastIgn, boolean alerts)
+    {
         this.addPlayer(player, lastIgn, new HashSet<>(), null, 0L, alerts);
     }
 

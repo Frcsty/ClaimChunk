@@ -22,6 +22,8 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -300,6 +302,20 @@ public final class ChunkEventHelper
                                      .substring(1)
                                      .split(" ", 1);
 
+        final ChunkHandler CHUNK = ClaimChunk.getInstance().getChunkHandler();
+        final List<String> commands = CHUNK.getBlockedCommands(chunk) != null ? Arrays.asList(CHUNK.getBlockedCommands(chunk).split(",")) : Collections.emptyList();
+
+        if (!commands.isEmpty())
+        {
+            commands.forEach(command ->
+                             {
+                                 if (command.equalsIgnoreCase(cmdAndArgs[0]))
+                                 {
+                                     Utils.msg(ply, "&6&l[!]&r &6Command is blocked in this chunk!");
+                                     e.setCancelled(true);
+                                 }
+                             });
+        }
         // Length should never be >1 but it could be 0.
         if (cmdAndArgs.length == 1)
         {
