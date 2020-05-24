@@ -10,22 +10,26 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 @SuppressWarnings("unused")
-public class PlayerConnectionHandler implements Listener {
+public class PlayerConnectionHandler implements Listener
+{
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent e) {
+    public void onPlayerJoin(PlayerJoinEvent e)
+    {
         if (Config.getBool("basic", "checkForUpdates")
                 && ClaimChunk.getInstance().isUpdateAvailable()
-                && e.getPlayer().hasPermission("claimchunk.update")) {
+                && e.getPlayer().hasPermission("claimchunk.update"))
+        {
             Utils.msg(e.getPlayer(),
-                    String.format("&l&aAn update is available for ClaimChunk! Current version: %s | Latest version: %s",
-                            ClaimChunk.getInstance().getVersion(), ClaimChunk.getInstance().getAvailableVersion()));
+                      String.format("&l&aAn update is available for ClaimChunk! Current version: %s | Latest version: %s",
+                                    ClaimChunk.getInstance().getVersion(), ClaimChunk.getInstance().getAvailableVersion()));
         }
         ClaimChunk.getInstance().getPlayerHandler().onJoin(e.getPlayer());
     }
 
     @EventHandler
-    public void onPlayerLeave(PlayerQuitEvent e) {
+    public void onPlayerLeave(PlayerQuitEvent e)
+    {
         AutoClaimHandler.disable(e.getPlayer());
     }
 

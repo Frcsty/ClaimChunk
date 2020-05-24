@@ -14,10 +14,11 @@ public class EconPrereq implements IClaimPrereq {
     @Override
     public boolean getPassed(PrereqClaimData data) {
         if (data.claimChunk.useEconomy() && data.claimChunk.getChunkHandler().getHasAllFreeChunks(data.playerId)) {
-            double cost = Config.getDouble("economy", "claimPrice");
+            final double cost = Config.getDouble("economy", "claimPrice");
+            final double balance = data.claimChunk.getEconomy().getMoney(data.playerId);
 
-            // Check if the chunk is free or the player has enough money
-            return cost <= 0 || data.claimChunk.getEconomy().getMoney(data.playerId) >= cost;
+            // Check if the player has enough money or if the chunk is free
+            return cost <= 0 || balance >= cost;
         }
         return true;
     }
